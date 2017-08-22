@@ -1,6 +1,7 @@
 package com.example.anil.duckit.stackoverflow;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -96,7 +97,11 @@ public class StackOverflowMain
         {
             JSONObject jsonObj = new JSONObject( parsedString );
             JSONArray jsonArray = jsonObj.getJSONArray( "items" );
-            return jsonArray.getJSONObject( 0 ).getInt( "accepted_answer_id" );
+            try {
+                return jsonArray.getJSONObject( 0 ).getInt( "accepted_answer_id" );
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         return 0;
