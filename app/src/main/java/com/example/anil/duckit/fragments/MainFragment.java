@@ -35,7 +35,7 @@ public class MainFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String question;
     private String mParam2;
-    private static Answer a = null;
+    private Answer a = null;
 
 
     public MainFragment() {
@@ -51,37 +51,50 @@ public class MainFragment extends Fragment {
      * @return A new instance of fragment MainFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MainFragment newInstance() {
-        MainFragment fragment = new MainFragment();
-
-
-        StackOverflowAysncTask task = new StackOverflowAysncTask();
-        try {
-            a = task.execute("why is it faster to process a sorted array than an unsorted array").get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        return fragment;
+    public static MainFragment newInstance()
+    {
+        return new MainFragment();
     }
 
+
+
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null)
         {
             question = getArguments().getString(ARG_PARAM1);
             Log.v("QUESTION", question);
+
+            try
+            {
+                StackOverflowAysncTask task = new StackOverflowAysncTask();
+                a = task.execute(question).get();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
+        if( a == null )
+        {
+            MainActivity mainActivity = (MainActivity) getActivity();
+            mainActivity.MainScreen();
+
+            return view;
+        }
+
+        //view = inflater.inflate(R.layout.fragment_main, container, false);
+
+        // Inflate the layout for this fragment
 
         //start asynctask to get stackoverflow answer
 

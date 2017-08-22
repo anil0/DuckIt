@@ -23,6 +23,9 @@ public class StackOverflowMain
         {
             //"loop hashmap java"
             //String question = "why is it faster to process a sorted array than an unsorted array";
+
+            System.out.println( "bacon" + question );
+
             String questionEncoded = URLEncoder.encode( question, "UTF-8" );
             String urlString = "https://api.stackexchange.com/2.2/similar?order=desc&sort=relevance&title=" + questionEncoded + "&site=stackoverflow&filter=!9YdnSIN18";
 

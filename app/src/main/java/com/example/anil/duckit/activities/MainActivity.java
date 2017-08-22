@@ -47,4 +47,10 @@ public class MainActivity extends AppCompatActivity {
         detailsFragment.setArguments(args);
         getSupportFragmentManager().beginTransaction().replace(R.id.container_main, detailsFragment).addToBackStack(null).commit();
     }
+
+    public void MainScreen()
+    {
+        MainQuestionFragment mainQuestionFragment = MainQuestionFragment.newInstance();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container_main, mainQuestionFragment).addToBackStack(null).commit();
+    }
 }
