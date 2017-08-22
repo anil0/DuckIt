@@ -4,13 +4,22 @@ package com.example.anil.duckit.fragments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.anil.duckit.R;
 import com.example.anil.duckit.activities.MainActivity;
+import com.example.anil.duckit.stackoverflow.Answer;
+import com.example.anil.duckit.stackoverflow.StackOverflowAysncTask;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.w3c.dom.Text;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,8 +33,9 @@ public class MainFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private String question;
     private String mParam2;
+    private static Answer a = null;
 
 
     public MainFragment() {
@@ -36,26 +46,34 @@ public class MainFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+
+
      * @return A new instance of fragment MainFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MainFragment newInstance(String param1, String param2) {
+    public static MainFragment newInstance() {
         MainFragment fragment = new MainFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+
+
+        StackOverflowAysncTask task = new StackOverflowAysncTask();
+        try {
+            a = task.execute("why is it faster to process a sorted array than an unsorted array").get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+        if (getArguments() != null)
+        {
+            question = getArguments().getString(ARG_PARAM1);
+            Log.v("QUESTION", question);
         }
     }
 
@@ -65,12 +83,28 @@ public class MainFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
+        //start asynctask to get stackoverflow answer
+
+
+        TextView stackoverflowText = (TextView) view.findViewById(R.id.stackoverflow_text);
+        //remove html
+        Document doc = Jsoup.parse(a.getBody().toString());
+        stackoverflowText.setText(doc.text());
+
         CardView btn = (CardView)view.findViewById(R.id.card_stackoverflow);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MainActivity mainActivity = (MainActivity)getActivity();
-                mainActivity.loadDetailsPage();
+
+                //pass stackoverflow answer object to details screen
+                System.out.println("THE MAIN CALL TO GET ANSWER -------------------------");
+                //System.out.println( a.getBody() );
+
+                Bundle args = new Bundle();
+                args.putString("ANSWER", a.getBody().toString());
+
+                mainActivity.loadDetailsPage(args);
             }
         });
 

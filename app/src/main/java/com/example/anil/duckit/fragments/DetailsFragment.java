@@ -6,8 +6,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 
 import com.example.anil.duckit.R;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,7 +27,7 @@ public class DetailsFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private String body;
     private String mParam2;
 
 
@@ -33,17 +39,18 @@ public class DetailsFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+
      * @return A new instance of fragment DetailsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static DetailsFragment newInstance(String param1, String param2) {
+    public static DetailsFragment newInstance() {
         DetailsFragment fragment = new DetailsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+        //Bundle args = fragment.getArguments();//new Bundle();
+        //String question = args.getString(ARG_PARAM1);
+//        args.putString(ARG_PARAM1, param1);
+//        args.putString(ARG_PARAM2, param2);
+        //Log.v("QUESTION",question);
+      //  fragment.setArguments(args);
         return fragment;
     }
 
@@ -51,8 +58,8 @@ public class DetailsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            body = getArguments().getString("ANSWER");
+            //mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -60,7 +67,34 @@ public class DetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_details, container, false);
+        View view = inflater.inflate(R.layout.fragment_details, container, false);
+
+        final WebView webView = (WebView) view.findViewById(R.id.detailWebView);
+
+        System.out.println("THIS IS THE DETAILS SCREEN AND HERE IS THE BODY PASSED");
+
+        //System.out.println(body);
+
+        String htmlBody = "<html>" + body + "</html>";
+
+        //jsoup remove href links so no new pages can be opened
+        Document doc = Jsoup.parse(htmlBody);
+
+        Elements link = doc.select("a");
+
+        System.out.println("HREFS----------------");
+        for (Element element : link) {
+            //System.out.println(element.attr("href"));
+
+            doc.html(doc.html().replace(element.attr("href").toString(), "#"));
+        }
+
+        System.out.println("BODY-----------------");
+        //System.out.println(doc.toString());
+
+        webView.loadData(doc.toString(), "text/html", null);
+
+        return view;
     }
 
 }
